@@ -90,6 +90,6 @@ class Dataset_300W(data.Dataset):
     target, mask = generate_label_map_gaussian(Hpoint, height//self.downsample, width//self.downsample, self.sigma, self.downsample) # H*W*C
       
     target = torch.from_numpy(target.transpose((2, 0, 1))).type(torch.FloatTensor)
-    mask   = torch.from_numpy(mask.transpose((2, 0, 1))).type(torch.ByteTensor)
+    mask   = torch.from_numpy(mask.transpose((2, 0, 1))).type(torch.BoolTensor)
 
     return image, target, mask

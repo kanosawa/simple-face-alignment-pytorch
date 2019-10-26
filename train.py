@@ -99,7 +99,6 @@ def main():
 
         # save checkpoint file
         state = {'state_dict': model.state_dict()}
-        state = model.state_dict()
         filename = 'checkpoints/{0:04d}.pth.tar'.format(epoch)
         torch.save(state, filename)
 

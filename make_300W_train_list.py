@@ -31,7 +31,7 @@ def load_mats(lists):
   return all_objects
 
 def load_all_300w(root_dir):
-  mat_dir = osp.join(root_dir, 'Bounding_Boxes')
+  mat_dir = osp.join(root_dir, 'bounding_boxes')
   pairs = [(osp.join(mat_dir,  'bounding_boxes_lfpw_testset.mat'),   osp.join(root_dir, 'lfpw', 'testset')),
            (osp.join(mat_dir,  'bounding_boxes_lfpw_trainset.mat'),  osp.join(root_dir, 'lfpw', 'trainset')),
            (osp.join(mat_dir,  'bounding_boxes_ibug.mat'),           osp.join(root_dir, 'ibug')),
@@ -69,7 +69,7 @@ if __name__ == '__main__':
 
   if len(sys.argv) != 3:
     print('usage: make_300W_train_list.py 300W_DATASET_DIRECTORY OUTPUT_FILE_NAME')
-    print('example: make_300W_train_list.py /root/datasets/300W 300W_train.txt')
+    print('example: make_300W_train_list.py ./datasets 300W_train.txt')
     exit()
   path_300W = sys.argv[1]
   output_file_name = sys.argv[2]
