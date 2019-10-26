@@ -30,6 +30,10 @@ class Options():
     # Acceleration
     parser.add_argument('--gpu_ids',          type=str, default='0',        help='empty for CPU, other for GPU-IDs')
     parser.add_argument('--workers',          type=int,   default=0,      help='number of data loading workers (default: 2)')
+    # For Test
+    parser.add_argument('--checkpoint_file',  type=str, default='checkpoints/0000.pth.tar', help='checkpoint filename')
+    parser.add_argument('--test_image',       type=str, default='test.jpg', help='test image filename')
+    parser.add_argument('--bbox',             type=int, nargs='+', default=[432, 819, 576, 972], help='bounding box for test image')
 
     self.opt = parser.parse_args()
     
