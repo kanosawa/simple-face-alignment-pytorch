@@ -23,12 +23,12 @@ import torch.utils.data as data
 
 class Dataset_300W(data.Dataset):
 
-  def __init__(self, train_list, sigma, transform=None):
+  def __init__(self, num_pts, train_list, sigma, transform=None):
 
+    self.NUM_PTS = num_pts
     self.train_list = train_list
     self.sigma = sigma
     self.transform = transform
-    self.NUM_PTS = 68
     self.downsample = 8
     self.reset()
     self.load_list()

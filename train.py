@@ -26,7 +26,7 @@ def make_train_loader():
     train_transform+= [transforms.ToTensor(), normalize]
     train_transform = transforms.Compose( train_transform )
 
-    train_data = Dataset_300W(args.train_list, args.sigma, train_transform)
+    train_data = Dataset_300W(args.num_pts, args.train_list, args.sigma, train_transform)
     train_loader = torch.utils.data.DataLoader(train_data, batch_size=args.batch_size, shuffle=True, num_workers=args.workers, pin_memory=True)
 
     return train_loader
@@ -62,6 +62,11 @@ def train(train_loader, model, criterion, optimizer, epoch):
         loss.backward()
         optimizer.step()
 
+        # if i == 0:
+        #     output_img = make_inference_image(inputs, outputs[-1], mask)
+        #     cv2.imshow('', output_img)
+        #     cv2.waitKey()
+
         # show progress
         bar.suffix = '({batch}/{size}) | Total: {total:} | ETA: {eta:} | Loss: {loss:.6f}'.format(
             batch=i + 1,
@@ -74,7 +79,7 @@ def train(train_loader, model, criterion, optimizer, epoch):
     bar.finish()
 
     # save inference image
-    cv2.imwrite('{0:06d}.jpg'.format(epoch), make_inference_image(inputs, outputs[-1], mask))
+    cv2.imwrite('images/{0:06d}.jpg'.format(epoch), make_inference_image(inputs, outputs[-1], mask))
 
 
 def main():
@@ -83,7 +88,7 @@ def main():
     train_loader = make_train_loader()
 
     # model
-    model = CFA(output_channel_num=69)
+    model = CFA(output_channel_num=args.num_pts + 1)
     model.cuda()
 
     # criterion and optimizer
@@ -93,6 +98,8 @@ def main():
 
     # training
     for epoch in range(args.start_epoch, args.epochs):
+
+        print(epoch)
         
         # training each epoch
         train(train_loader, model, criterion, optimizer, epoch)

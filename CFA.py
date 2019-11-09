@@ -11,7 +11,7 @@ class CFA(nn.Module):
 
         self.output_channel_num = output_channel_num
         self.stage_channel_num = 128
-        self.stage_num = 3
+        self.stage_num = 2
 
         self.features = nn.Sequential(
             nn.Conv2d(  3,  64, kernel_size=3, dilation=1, padding=1), nn.ReLU(inplace=True),

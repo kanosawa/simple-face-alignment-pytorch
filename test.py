@@ -12,7 +12,7 @@ args = opt.opt
 if __name__ == '__main__':
 
     # model
-    model = CFA(output_channel_num=69)
+    model = CFA(output_channel_num=args.num_pts + 1)
     model.cuda()
 
     # load weights
@@ -33,7 +33,7 @@ if __name__ == '__main__':
     outputs = model(img)
 
     # make inference image
-    dammy_mask = torch.from_numpy(np.ones((1, 68, 1, 1)))
+    dammy_mask = torch.from_numpy(np.ones((1, args.num_pts, 1, 1)))
     inference_image = make_inference_image(img, outputs[-1], dammy_mask)
 
     # show inference image

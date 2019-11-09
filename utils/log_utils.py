@@ -26,10 +26,10 @@ def make_inference_image(inputs, landmarks, mask):
     landmarks = landmarks.cpu().detach().numpy()[0]
     output_img = Image.fromarray(input_img)
     draw = ImageDraw.Draw(output_img)
-    for i in range(68):
+    for i in range(landmarks.shape[0] - 1):
         if mask[0][i][0][0] == 1:
             landmark_ = cv2.resize(landmarks[i], (input_img.shape[:2]), interpolation=cv2.INTER_CUBIC)
             index = np.unravel_index(np.argmax(landmark_), landmark_.shape)
-            draw.ellipse((index[1]-4, index[0]-4, index[1]+4, index[0]+4), fill=(255))
+            draw.ellipse((index[1]-1, index[0]-1, index[1]+1, index[0]+1), fill=(0))
     output_img = np.asarray(output_img)
     return output_img
