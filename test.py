@@ -1,9 +1,12 @@
 import numpy as np
 import torch
-from CFA import CFA
+from torchvision import transforms
 import cv2
+from PIL import Image, ImageDraw
+from CFA import CFA
 import options
 from utils.log_utils import make_inference_image
+
 
 opt = options.Options(None)
 args = opt.opt
@@ -12,30 +15,35 @@ args = opt.opt
 if __name__ == '__main__':
 
     # model
-    model = CFA(output_channel_num=args.num_pts + 1)
+    model = CFA(output_channel_num=args.num_pts + 1, checkpoint_name=args.checkpoint_file)
     model.cuda()
 
-    # load weights
-    snapshot = torch.load(args.checkpoint_file)
-    model.load_state_dict(snapshot['state_dict'])
+    # transform
+    normalize   = transforms.Normalize(mean=[0.5, 0.5, 0.5],
+                                       std=[0.5, 0.5, 0.5])
+    train_transform = [transforms.ToTensor(), normalize]
+    train_transform = transforms.Compose( train_transform )
 
     # load image
-    bbox = args.bbox
-    img = cv2.imread(args.test_image)
-    img = img[bbox[0]:bbox[2], bbox[1]:bbox[3]]
-    img = cv2.resize(img, (args.crop_height, args.crop_width))
-    img = img[np.newaxis, :, :, :].transpose(0, 3, 1, 2)
-    img = img.astype('float32') / 255.0
-    img = torch.from_numpy(img)
-    img = img.cuda()
+    img = Image.open(args.test_image)
+    img = img.crop(tuple(args.bbox))
+    img_tmp = img.resize((args.crop_width, args.crop_height), Image.BICUBIC)
+    img = train_transform(img_tmp)
+    img = img.unsqueeze(0).cuda()
 
     # inference
-    outputs = model(img)
+    heatmaps = model(img)
+    heatmaps = heatmaps[-1].cpu().detach().numpy()[0]
 
-    # make inference image
-    dammy_mask = torch.from_numpy(np.ones((1, args.num_pts, 1, 1)))
-    inference_image = make_inference_image(img, outputs[-1], dammy_mask)
+    # draw landmarks
+    draw = ImageDraw.Draw(img_tmp)
+    for i in range(args.num_pts):
+        heatmaps_tmp = cv2.resize(heatmaps[i], (args.crop_height, args.crop_width), interpolation=cv2.INTER_CUBIC)
+        landmark = np.unravel_index(np.argmax(heatmaps_tmp), heatmaps_tmp.shape)
+        landmark_y = landmark[0]
+        landmark_x = landmark[1]
+        draw.ellipse((landmark_x - 2, landmark_y - 2, landmark_x + 2, landmark_y + 2), fill=(255, 0, 0))
 
     # show inference image
-    cv2.imshow('', inference_image)
-    cv2.waitKey()
+    img_tmp.show()
+    input()

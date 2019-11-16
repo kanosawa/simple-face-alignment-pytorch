@@ -6,7 +6,7 @@ from collections import OrderedDict
 
 # Cacaded Face Alignment
 class CFA(nn.Module):
-    def __init__(self, output_channel_num):
+    def __init__(self, output_channel_num, checkpoint_name=None):
         super(CFA, self).__init__()
 
         self.output_channel_num = output_channel_num
@@ -22,14 +22,10 @@ class CFA(nn.Module):
             nn.MaxPool2d(kernel_size=2, stride=2),
             nn.Conv2d(128, 256, kernel_size=3, dilation=1, padding=1), nn.ReLU(inplace=True),
             nn.Conv2d(256, 256, kernel_size=3, dilation=1, padding=1), nn.ReLU(inplace=True),
-            nn.Conv2d(256, 256, kernel_size=3, dilation=1, padding=1), nn.ReLU(inplace=True),
-            nn.MaxPool2d(kernel_size=2, stride=2),
-            nn.Conv2d(256, 512, kernel_size=3, dilation=1, padding=1), nn.ReLU(inplace=True),
-            nn.Conv2d(512, 512, kernel_size=3, dilation=1, padding=1), nn.ReLU(inplace=True),
-            nn.Conv2d(512, 512, kernel_size=3, dilation=1, padding=1), nn.ReLU(inplace=True))
+            nn.Conv2d(256, 256, kernel_size=3, dilation=1, padding=1), nn.ReLU(inplace=True))
         
         self.CFM_features = nn.Sequential(
-            nn.Conv2d(512, 256, kernel_size=3, padding=1), nn.ReLU(inplace=True),
+            nn.Conv2d(256, 256, kernel_size=3, padding=1), nn.ReLU(inplace=True),
             nn.Conv2d(256, self.stage_channel_num, kernel_size=3, padding=1), nn.ReLU(inplace=True))
 
         # cascaded regression
@@ -39,7 +35,11 @@ class CFA(nn.Module):
         self.stages = nn.ModuleList(stages)
         
         # initialize weights
-        self.load_weight_from_dict()
+        if checkpoint_name:
+            snapshot = torch.load(checkpoint_name)
+            self.load_state_dict(snapshot['state_dict'])
+        else:
+            self.load_weight_from_dict()
     
 
     def forward(self, x):

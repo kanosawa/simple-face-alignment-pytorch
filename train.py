@@ -3,7 +3,6 @@ import torch
 import transforms
 from Dataset_300W import Dataset_300W
 from CFA import CFA
-import cv2
 from progress.bar import Bar
 from utils.log_utils import AverageMeter, make_inference_image
 import options
@@ -61,11 +60,6 @@ def train(train_loader, model, criterion, optimizer, epoch):
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-
-        # if i == 0:
-        #     output_img = make_inference_image(inputs, outputs[-1], mask)
-        #     cv2.imshow('', output_img)
-        #     cv2.waitKey()
 
         # show progress
         bar.suffix = '({batch}/{size}) | Total: {total:} | ETA: {eta:} | Loss: {loss:.6f}'.format(

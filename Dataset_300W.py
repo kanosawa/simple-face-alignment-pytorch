@@ -29,7 +29,7 @@ class Dataset_300W(data.Dataset):
     self.train_list = train_list
     self.sigma = sigma
     self.transform = transform
-    self.downsample = 8
+    self.downsample = 4
     self.reset()
     self.load_list()
 
